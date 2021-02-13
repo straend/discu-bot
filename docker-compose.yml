@@ -1,0 +1,54 @@
+version: "3"
+
+services:
+
+  db:
+    env_file: .env
+    image: postgres
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  front:
+    env_file: .env
+    build: 
+      context: ./faster-front
+      args:
+        CHANNEL_API_URL: https://${API_HOST}
+    depends_on:
+      - apiv1
+    environment:
+      - DB_PATH=postgresql+psycopg2://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.discofront.rule: "Host(`${FRONT_HOST}`)"
+      traefik.http.routers.discofront.entrypoints: "${TRAEFIK_ENTRYPOINT}"
+      traefik.http.routers.discofront.tls.certresolver: "${TRAEFIK_CERTRESOLVER}"
+      
+  apiv1:
+    env_file: .env
+    build: .
+    depends_on:
+      - db
+    environment:
+      - DB_PATH=postgresql+psycopg2://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.discoapi.rule: "Host(`${API_HOST}`)"
+      traefik.http.routers.discoapi.entrypoints: "${TRAEFIK_ENTRYPOINT}"
+      traefik.http.routers.discoapi.tls.certresolver: "${TRAEFIK_CERTRESOLVER}"
+    
+  bot:
+    env_file: .env
+    build: .
+    volumes:
+      - ./start-bot.sh:/start.sh
+    depends_on:
+      - db
+    environment:
+      - DB_PATH=postgresql+psycopg2://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db
+      - FRONT_ADDRESS=https://${FRONT_HOST}
+      - DISCORD_TOKEN=${DISCORD_TOKEN}
+      - DISCORD_IS_BOT=${DISCORD_IS_BOT}
+
+volumes:
+  pgdata:

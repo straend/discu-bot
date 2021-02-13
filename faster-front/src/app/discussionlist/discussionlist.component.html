@@ -1,0 +1,26 @@
+<div *ngIf="channel">
+
+    <h1><a href="/{{ channel.name }}"> {{ channel.name }} </a></h1>
+ 
+    <div>
+        <mat-table [dataSource]="dataSource" class="mat-elevation-z8" >
+         
+        <ng-container matColumnDef="topic">
+            <mat-header-cell *matHeaderCellDef style="flex: 5;"> Topic </mat-header-cell>
+            <mat-cell *matCellDef="let element" style="flex: 5;"><a href="/{{element.channel.name}}/{{element.id}}"> {{element.topic}} </a></mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="time_start">
+            <mat-header-cell *matHeaderCellDef> When </mat-header-cell>
+            <mat-cell *matCellDef="let element"> {{element.time_start | date }} </mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="starter__nick">
+            <mat-header-cell *matHeaderCellDef> Starter </mat-header-cell>
+            <mat-cell *matCellDef="let element"> <b>{{element.starter.nick}} </b></mat-cell>
+        </ng-container>
+
+        <mat-header-row *matHeaderRowDef="columnsToDisplay"></mat-header-row>
+        <mat-row *matRowDef="let myRowData; columns: columnsToDisplay"></mat-row>      
+
+        </mat-table>
+    </div>
+</div>

@@ -1,0 +1,22 @@
+<div *ngIf="discussion">
+    <h1><a href="/{{ discussion.channel.name }}"> {{ discussion.channel.name }} </a></h1>
+     <mat-table [dataSource]="dataSource" class="mat-elevation-z1" >
+        
+    <ng-container matColumnDef="text">
+        <mat-header-cell *matHeaderCellDef style="flex: 5;"> <a href="/{{discussion.channel.name}}/{{discussion.id}}"><h1>{{ discussion.topic }} </h1></a></mat-header-cell>
+        <mat-cell *matCellDef="let element" style="flex: 5;">{{element.text}} </mat-cell>
+    </ng-container>
+    <ng-container matColumnDef="when">
+        <mat-header-cell *matHeaderCellDef> <b>{{discussion.time_start | date }} </b></mat-header-cell>
+        <mat-cell  *matCellDef="let element"><a href="/{{discussion.channel.name}}/{{discussion.id}}#{{element.id}}" matTooltip="{{element.when | date : 'medium' }}">{{element.when | date : 'mediumTime' }}</a></mat-cell>
+    </ng-container>
+    <ng-container matColumnDef="author__nick">
+        <mat-header-cell *matHeaderCellDef> <b> {{ discussion.starter.nick }} </b> </mat-header-cell>
+        <mat-cell *matCellDef="let element"> <b style="color: {{ element.author.color }};">{{element.author.nick}} </b></mat-cell>
+    </ng-container>
+
+    <mat-header-row *matHeaderRowDef="columnsToDisplay"></mat-header-row>
+    <mat-row *matRowDef="let myRowData; columns: columnsToDisplay" id="{{myRowData.id}}"></mat-row>      
+
+    </mat-table>
+</div>
